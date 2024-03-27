@@ -6,7 +6,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func main() {
+func scrapeJobs() {
 	c := colly.NewCollector(
 		colly.AllowedDomains("jobs.lever.co"),
 	)
