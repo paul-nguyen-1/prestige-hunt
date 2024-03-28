@@ -3,11 +3,25 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sync"
 )
 
 func main() {
-	// Start scraping concurrently
-	go scrapeJobs()
+	// Scrape by individual company
+	// go scrapeLeverCompany("netflix")
+
+	// Scrape companies concurrently
+	var waitGroup sync.WaitGroup
+	jobChannel := make(chan job)
+
+	go processJobs(jobChannel)
+	for _, company := range hardcodedLeverCompanies {
+		waitGroup.Add(1)
+		go scrapeLeverCompanyList(company, &waitGroup, jobChannel)
+	}
+
+	waitGroup.Wait()
+	close(jobChannel)
 
 	server := &http.Server{
 		Addr:    ":3000",
